@@ -25,7 +25,7 @@ public class BoardApiController {
     private final BoardService boardService;
     private final HttpSession session;
 
-    @PostMapping("/board")
+    @PostMapping("/s/board")
     public ResponseDto<?> save(@RequestBody BoardSaveReqDto boardSaveReqDto) {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute("sessionUser");
@@ -48,7 +48,7 @@ public class BoardApiController {
         return new ResponseDto<>(1, "성공", boardService.findAll());
     }
 
-    @PutMapping("/board/{id}")
+    @PutMapping("/s/board/{id}")
     public ResponseDto<?> update(@PathVariable Long id, @RequestBody BoardUpdateReqDto boardUpdateReqDto) {
         SessionUser sessionUser = (SessionUser) session.getAttribute("sessionUser");
         if (sessionUser == null) {
@@ -58,13 +58,12 @@ public class BoardApiController {
         return new ResponseDto<>(1, "성공", boardService.update(boardUpdateReqDto));
     }
 
-    @DeleteMapping("/board/{id}")
+    @DeleteMapping("/s/board/{id}")
     public ResponseDto<?> deleteById(@PathVariable Long id) {
         SessionUser sessionUser = (SessionUser) session.getAttribute("sessionUser");
-        if (sessionUser == null) {
-            throw new RuntimeException("로그인이 필요합니다.");
-        }
-        boardService.deleteById(id);
+
+        // 권한을 체크하기위한 매개변수는 두번째 매개변수로 넘긴다
+        boardService.deleteById(id, sessionUser.getId());
         return new ResponseDto<>(1, "성공", null);
     }
 
